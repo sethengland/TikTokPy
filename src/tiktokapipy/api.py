@@ -193,11 +193,13 @@ class TikTokAPI:
         else:
             video_id = link_or_id
 
-        response = VideoPage.model_validate(
-            get_video_detail_sync(video_id, self.context)
-        )
-        return self._extract_video_from_response(response)
-
+        response = get_video_detail_sync(video_id, self.context)
+        try:
+            validated_response = VideoPage.model_validate(response)
+        except:
+            return None
+        return self._extract_video_from_response(validated_response)
+    
     def _scrape_data(
         self,
         link: str,
